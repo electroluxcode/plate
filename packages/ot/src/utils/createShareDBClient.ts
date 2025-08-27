@@ -36,7 +36,6 @@ export async function createShareDBClient(config: ShareDBConfig) {
  */
 export async function registerOtType() {
   try {
-    // @ts-expect-error - ottype-slate-test doesn't have type declarations
     const { default: ottype } = await import('ottype-slate-test');
     const { default: ShareDB } = await import('sharedb/lib/client');
     

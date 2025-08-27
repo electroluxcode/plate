@@ -21,13 +21,18 @@ export const withPlateOt: ExtendEditor<OtConfig> = ({ editor, getOptions }) => {
 
     // 如果连接已建立，提交操作到 ShareDB
     if (options._status === 'connected' && options._doc) {
+      // 过滤选择操作（ShareDB 不需要处理选择变化）
+      if (operation.type === 'set_selection') {
+        return;
+      }
+
       // 异步提交操作，不阻塞编辑器
       setTimeout(() => {
-        // 直接调用 submitOperation，避免循环引用
         submitOperationToShareDB(options._doc, [operation], options.debug).catch((error: any) => {
           if (options.debug) {
-            console.error('Failed to submit operation:', error);
+            console.error('❌ OT: Failed to submit operation:', error);
           }
+          options.onError?.(error);
         });
       }, 0);
     }
@@ -40,30 +45,35 @@ export const withPlateOt: ExtendEditor<OtConfig> = ({ editor, getOptions }) => {
  * 提交操作到 ShareDB 的辅助函数
  */
 async function submitOperationToShareDB(doc: any, operations: Operation[], debug?: boolean): Promise<void> {
-  if (!doc) {
-    if (debug) {
-      console.warn('Cannot submit operation - no document');
-    }
-    return;
-  }
+  if (!doc) return;
 
-  // 过滤掉选择操作
-  const contentOps = operations.filter(op => op.type !== 'set_selection');
-  if (contentOps.length === 0) {
-    return;
-  }
+  try {
+    // 转换 Slate 操作为 ShareDB 格式
+    const sharedbOps = operations.map(op => ({
+      type: 'slate',
+      op: op,
+    }));
 
-  return new Promise<void>((resolve, reject) => {
-    doc.submitOp(contentOps, (error: any) => {
-      if (error) {
-        console.error('Failed to submit operation:', error);
-        // reject(error);
-      } else {
-        if (debug) {
-          console.log('Operation submitted successfully:', contentOps);
+    await new Promise<void>((resolve, reject) => {
+      // 使用 source: false 标识这是本地操作
+      doc.submitOp(sharedbOps, { source: false }, (error: any) => {
+        if (error) {
+          if (debug) {
+            console.error('❌ OT: ShareDB operation submit failed:', error);
+          }
+          reject(error);
+        } else {
+          if (debug) {
+            console.log('📤 OT: Operation submitted to ShareDB:', sharedbOps);
+          }
+          resolve();
         }
-        resolve();
-      }
+      });
     });
-  });
+  } catch (error) {
+    if (debug) {
+      console.error('💥 OT: Submit operation error:', error);
+    }
+    throw error;
+  }
 } 
