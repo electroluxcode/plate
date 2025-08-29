@@ -56,9 +56,7 @@ export interface OtOptions {
   /** 调试模式 */
   debug?: boolean;
   /** 自定义事件回调 */
-  onConnect?: (data: {
-    initialValue: Descendant[]
-  }) => void;
+  onConnect?: () => void;
   onDisconnect?: () => void;
   onError?: (error: any) => void;
   onStatusChange?: (status: OtStatus) => void;
@@ -98,7 +96,7 @@ export type OtConfig = PluginConfig<
     /** 获取当前状态 */
     getStatus: () => OtStatus;
     /** 提交操作到 ShareDB */
-    submitOperation: (operations: any[]) => Promise<void>;
+    submitOp: (operations: any[]) => Promise<void>;
     /** 应用远程操作 */
     applyRemoteOperation: (operations: any[]) => void;
   }

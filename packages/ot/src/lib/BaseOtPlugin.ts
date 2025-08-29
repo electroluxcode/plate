@@ -4,9 +4,11 @@ import {
   type Value,
   createTSlatePlugin,
 } from 'platejs';
+import { Transforms } from "slate"
 
 import type { OtConfig, OtInitOptions, OtOptions, OtStatus } from './types';
 
+import { castArray } from './util';
 import { withPlateOt } from './withPlateOt';
 
 export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
@@ -36,23 +38,34 @@ export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
   applyRemoteOperation: (operations: Operation[]) => {
     const { editor, getOptions } = ctx;
     const options = getOptions();
-
+    
     try {
-      // 使用原始 apply 方法避免循环
-      const originalApply = (editor as any).originalApply || editor.apply;
-
-      operations.forEach(op => {
-        if (options.debug) {
-          console.log('� OT: Applying remote operation:', op);
-        }
-        originalApply(op);
-      });
+      // 使用专用的远程操作应用方法，避免循环
+      if ((editor as any).applyRemoteOperations) {
+        (editor as any).applyRemoteOperations(operations);
+      }
     } catch (error) {
       if (options.debug) {
         console.error('💥 OT: Failed to apply remote operation:', error);
       }
       options.onError?.(error);
     }
+  },
+
+  /**
+   * @description 应用远程操作-不经过editor.apply
+   * @param operations 
+   */
+  applyRemoteOperationWithoutEditor: (operations: Operation[]) => {
+    const { editor } = ctx as any;
+    const updateOp = () => {
+      const opsQueue = castArray(operations)
+      opsQueue.forEach(op => {
+        Transforms.transform(editor as any, op)
+      })
+      editor.onChange()  
+    }
+    updateOp()
   },
 
   /**
@@ -131,10 +144,14 @@ export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
           }
 
           // 设置初始值
-          const initialValue = doc.data?.children || [];
-          options.onConnect?.({
-            initialValue: initialValue
-          });
+          const initialValue = doc.data?.children || [{
+            children: [{
+              text: 'hello world',
+            }],
+            type: 'paragraph',
+          }];
+          editor.children = initialValue;
+          options.onConnect?.();
 
           resolve();
         });
@@ -142,14 +159,19 @@ export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
 
       // 监听远程操作
       doc.on('op', (ops: any[], source: any) => {
-        if (source === false) return; // 忽略本地操作
-
-        if (options.debug) {
-          console.log('📨 OT: Received remote operations:', ops);
+        // 忽略本地操作的回显（source 为 false 表示是本地操作）
+        if (source) {
+          if (options.debug) {
+            console.log('🔄 OT: Ignoring local operation echo');
+          }
+          return;
         }
 
-        // 应用远程操作
-        (ctx.api as any).ot.applyRemoteOperation(ops);
+        if (options.debug) {
+          console.log('📨 OT: Received remote operations:', ops, 'from source:', source);
+        }
+
+        (ctx.api as any).ot.applyRemoteOperationWithoutEditor(ops);
       });
 
       // 监听连接状态
@@ -282,11 +304,6 @@ export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
         initialNodes = editor.api.create.value();
       }
 
-      // 初始化编辑器内容
-      editor.tf.init({
-        shouldNormalizeEditor: true,
-        value: initialNodes,
-      });
     }
 
     // 自动连接
@@ -295,47 +312,4 @@ export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
     }
   },
 
-  /**
-   * 提交操作到 ShareDB
-   */
-  submitOperation: async (operations: Operation[]): Promise<void> => {
-    const { getOptions } = ctx;
-    const options = getOptions();
-
-    if (options._status !== 'connected' || !options._doc) {
-      if (options.debug) {
-        console.warn('⚠️ OT: Cannot submit operation - not connected');
-      }
-      return;
-    }
-
-    try {
-      // 转换 Slate 操作为 ShareDB 操作
-      const sharedbOps = operations.map(op => ({
-        op: op,
-        type: 'slate',
-      }));
-
-      await new Promise<void>((resolve, reject) => {
-        options._doc.submitOp(sharedbOps, { source: false }, (error: any) => {
-          if (error) {
-            if (options.debug) {
-              console.error('❌ OT: Failed to submit operation:', error);
-            }
-            reject(error as Error);
-          } else {
-            if (options.debug) {
-              console.log('📤 OT: Operation submitted successfully');
-            }
-            resolve();
-          }
-        });
-      });
-    } catch (error) {
-      if (options.debug) {
-        console.error('💥 OT: Submit operation error:', error);
-      }
-      throw error;
-    }
-  },
 })); 

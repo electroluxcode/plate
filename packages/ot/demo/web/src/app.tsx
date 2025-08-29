@@ -87,7 +87,7 @@ async function submitOp(doc: any, operations: Operation[]) {
 
   return new Promise<void>((resolve, reject) => {
     // 提交操作到ShareDB - 不传入source参数，让ShareDB自动处理
-    doc.submitOp(contentOps, (error: any) => {
+    doc.submitOp(contentOps, {},(error: any) => {
       if (error) {
         console.error('提交操作失败:', error, contentOps);
         reject(error);

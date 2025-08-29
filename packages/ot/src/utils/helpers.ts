@@ -61,21 +61,6 @@ export function delay(ms: number): Promise<void> {
 }
 
 /**
- * 创建去抖函数
- */
-export function debounce<T extends (...args: any[]) => void>(
-  func: T,
-  wait: number
-): T {
-  let timeout: NodeJS.Timeout;
-  
-  return ((...args: any[]) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  }) as T;
-}
-
-/**
  * 记录操作的详细信息（用于调试）
  */
 export function logOperation(operation: Operation, prefix = '操作'): void {

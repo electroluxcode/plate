@@ -31,23 +31,3 @@ export async function createShareDBClient(config: ShareDBConfig) {
   };
 }
 
-/**
- * 注册 OT 类型
- */
-export async function registerOtType() {
-  try {
-    const { default: ottype } = await import('ottype-slate-test');
-    const { default: ShareDB } = await import('sharedb/lib/client');
-    
-    // 确保只注册一次
-    if (!ShareDB.types.map[ottype.type.name]) {
-      ShareDB.types.register(ottype.type);
-      console.log('OT type registered:', ottype.type.name);
-    }
-    
-    return ottype.type;
-  } catch (error) {
-    console.error('Failed to register OT type:', error);
-    throw error;
-  }
-} 
