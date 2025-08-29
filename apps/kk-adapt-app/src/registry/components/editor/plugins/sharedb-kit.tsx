@@ -1,9 +1,9 @@
 'use client';
 
-import { OtPlugin } from '@platejs/ot/react';
+import { ShareDBPlugin } from '@platejs/sharedb/react';
 
-export const OTKit = [
-  OtPlugin.configure({
+export const ShareDBKit = [
+  ShareDBPlugin.configure({
     options: {
       sharedb: {
         url: 'ws://localhost:8080',

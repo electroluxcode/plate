@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { OtPlugin } from '@platejs/ot/react';
+import { ShareDBPlugin } from '@platejs/sharedb/react';
 import {TrailingBlockPlugin} from '@platejs/utils'
 import { KEYS, NormalizeTypesPlugin } from 'platejs';
 import { Plate, usePlateEditor } from 'platejs/react';
@@ -40,7 +40,7 @@ export default function PlaygroundDemo({
           // [KEYS.indent]: id !== 'listClassic',
           // [KEYS.list]: id !== 'listClassic',
           [KEYS.listClassic]: true,
-          ot: true, // 启用 OT 插件
+          sharedb: true, // 启用 sharedb 插件
         },
       },
       plugins: [
@@ -57,25 +57,25 @@ export default function PlaygroundDemo({
           },
         }),
 
-        // OT 协作编辑插件 - 简化配置
-        OtPlugin.configure({
+        // sharedb 协作编辑插件 - 简化配置
+        ShareDBPlugin.configure({
           enabled: true,
           options: {
             debug: true,
             enablePresence: false,
             onConnect: () => {
-              console.log('✅ OT: Connected to ShareDB server');
-              console.log('🎉 OT: Ready for collaborative editing!');
+              console.log('✅ sharedb: Connected to ShareDB server');
+              console.log('🎉 sharedb: Ready for collaborative editing!');
               setIsOtReady(true);
             },
             onDisconnect: () => {
-              console.log('❌ OT: Disconnected from ShareDB server');
-              console.log('💡 OT: Make sure ShareDB server is running on ws://localhost:8111');
+              console.log('❌ sharedb: Disconnected from ShareDB server');
+              console.log('💡 sharedb: Make sure ShareDB server is running on ws://localhost:8111');
               setIsOtReady(false);
             },
             onError: (error: any) => {
-              console.error('🚨 OT Error:', error);
-              console.error('🔍 OT Error details:', {
+              console.error('🚨 sharedb Error:', error);
+              console.error('🔍 sharedb Error details:', {
                 code: error?.code,
                 message: error?.message,
                 stack: error?.stack,
@@ -84,24 +84,24 @@ export default function PlaygroundDemo({
               setIsOtReady(false);
             },
             onStatusChange: (status: any) => {
-              console.log('🔄 OT Status changed:', status);
+              console.log('🔄 sharedb Status changed:', status);
               
               // 添加状态特定的提示
               switch(status) {
                 case 'connected': {
-                  console.log('🌟 OT: Successfully connected to ShareDB!');
+                  console.log('🌟 sharedb: Successfully connected to ShareDB!');
                   break;
                 }
                 case 'connecting': {
-                  console.log('📡 OT: Attempting to connect to ws://localhost:8111...');
+                  console.log('📡 sharedb: Attempting to connect to ws://localhost:8111...');
                   break;
                 }
                 case 'disconnected': {
-                  console.log('⚠️ OT: Connection lost. Check if ShareDB server is running.');
+                  console.log('⚠️ sharedb: Connection lost. Check if ShareDB server is running.');
                   break;
                 }
                 case 'error': {
-                  console.log('💥 OT: Connection error occurred.');
+                  console.log('💥 sharedb: Connection error occurred.');
                   break;
                 }
               }
@@ -117,7 +117,7 @@ export default function PlaygroundDemo({
         }),
 
       ],
-      // 重要：使用 OT 时需跳过默认初始化
+      // 重要：使用 sharedb 时需跳过默认初始化
       
       skipInitialization: true,
     },
@@ -126,17 +126,17 @@ export default function PlaygroundDemo({
 
 
 
-  // 初始化 OT 连接
+  // 初始化 sharedb 连接
   React.useEffect(() => {
     const initOtConnection = async () => {
       try {
-        if (!editor?.api?.ot) {
-          console.error("❌ PlaygroundDemo: Editor OT API not available");
+        if (!editor?.api?.sharedb) {
+          console.error("❌ PlaygroundDemo: Editor sharedb API not available");
           return;
         }
         
-        // 使用新的 init 方法初始化 OT 插件
-        await (editor.api.ot as any).init({
+        // 使用新的 init 方法初始化 sharedb 插件
+        await (editor.api.sharedb as any).init({
           id: '814862095570853888', // 文档 ID
           autoConnect: true, // 自动连接
           collection: 'documents', // 文档集合
@@ -149,13 +149,13 @@ export default function PlaygroundDemo({
           value: getI18nValues(locale).playground, // 初始值（仅在文档为空时使用）
         });
 
-        const options = editor.api.ot.getCtx().getOptions()
+        const options = editor.api.sharedb.getCtx().getOptions()
         console.log("initOtConnection-test-zptest111", options)
         setSocket(options._socket)
         joinRoom(options._socket, { authorization: CONFIG.authorization, fileId: CONFIG.fileId })
-        console.log('✅ PlaygroundDemo: OT plugin initialized successfully');
+        console.log('✅ PlaygroundDemo: sharedb plugin initialized successfully');
       } catch (error) {
-        console.error('❌ PlaygroundDemo: Failed to initialize OT plugin:', error);
+        console.error('❌ PlaygroundDemo: Failed to initialize sharedb plugin:', error);
       }
     };
 
@@ -163,8 +163,8 @@ export default function PlaygroundDemo({
 
     // 清理：组件卸载时断开连接
     return () => {
-      if (editor?.api?.ot) {
-        editor.api.ot.disconnect();
+      if (editor?.api?.sharedb) {
+        editor.api.sharedb.disconnect();
       }
     };
   }, [editor, locale]);

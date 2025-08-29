@@ -36,7 +36,7 @@ import { SuggestionKit } from './plugins/suggestion-kit';
 import { TableKit } from './plugins/table-kit';
 import { TocKit } from './plugins/toc-kit';
 import { ToggleKit } from './plugins/toggle-kit';
-import { OTKit } from './plugins/ot-kit';
+import { ShareDBKit } from './plugins/sharedb-kit';
 
 export const EditorKit = [
   ...AIKit,
@@ -69,7 +69,7 @@ export const EditorKit = [
   ...DiscussionKit,
   ...CommentKit,
   ...SuggestionKit,
-  ...OTKit,
+  ...ShareDBKit,
 
   // Editing
   ...SlashKit,
