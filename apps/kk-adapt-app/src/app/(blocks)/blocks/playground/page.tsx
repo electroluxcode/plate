@@ -43,7 +43,7 @@ export default function PlaygroundPage() {
     >
       {/* <BlockWrapper block={block}> */}
       <Suspense fallback={null}>
-        <PlaygroundDemo className="h-dvh" />
+        {/* <PlaygroundDemo className="h-dvh" /> */}
       </Suspense>
       {/* {chunks?.map((chunk, index) => (
           <BlockChunk

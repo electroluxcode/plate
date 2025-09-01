@@ -12,6 +12,11 @@ export function getSignature (authorization: string) {
 	}
 }
 
+
+/**
+ * @description 业务逻辑:加入房间 & 并且保持心跳
+ * @returns 
+ */
 export function joinRoom (socket: any, { authorization, fileId }: { authorization: string, fileId: string }) {
 	if (!socket) {
 		return

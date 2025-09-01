@@ -10,7 +10,7 @@ import { Plate, usePlateEditor, usePlateViewEditor } from "platejs/react";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { EditorKit } from "@/registry/components/editor/editor-kit";
+import { EditorKit } from "@/registry/components/editor/kk-adapt-plugin-kit";
 import { CopilotKit } from "@/registry/components/editor/plugins/copilot-kit";
 import { MarkdownJoiner } from "@/registry/lib/markdown-joiner-transform";
 import { Editor, EditorContainer, EditorView } from "@/registry/ui/editor";

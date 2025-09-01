@@ -1,0 +1,180 @@
+import { nodeResolve } from "@rollup/plugin-node-resolve";
+import react from "@vitejs/plugin-react";
+import path from "node:path";
+import { type UserConfig, defineConfig, loadEnv, normalizePath } from "vite";
+import dts from "vite-plugin-dts";
+
+// import cssmodulesimportant from "./plugin/vite-plugin-css-modules-important/index.mjs";
+
+
+// 自定义插件：处理 node_modules 路径重映射
+// 解决 GitHub issue #3684: https://github.com/rollup/rollup/issues/3684
+const nodeModulesPathPlugin = () => {
+  return {
+    name: 'node-modules-path',
+    generateBundle(options: any, bundle: any) {
+      // 遍历所有生成的文件，替换代码中的 node_modules 路径引用
+      for (const fileName in bundle) {
+        const chunk = bundle[fileName];
+        if (chunk.type === 'chunk') {
+          // 替换build
+          chunk.code = chunk.code.replace(/(['"`])([^'"`]*?)\/build\//g, '$1$2/buildLink/');
+          // 替换导入语句中的 node_modules 路径为 external
+          chunk.code = chunk.code.replace(/(['"`])([^'"`]*?)\/node_modules\//g, '$1$2/external/');
+          chunk.code = chunk.code.replace(/(['"`])([^'"`]*?)\/dist\//g, '$1$2/distLink/');
+          chunk.code = chunk.code.replace(/(['"`])([^'"`]*?)\/.pnpm\//g, '$1$2/pnpmLink/');
+        }
+      }
+    }
+  };
+};
+
+const entryFileNamesFn = (chunkInfo: any) => {
+  // 处理 node_modules 路径，重命名为 external 避免被 npm 忽略
+
+  return '[name].js';
+}
+
+export default defineConfig((config): UserConfig => {
+  process.env = {
+    ...process.env,
+    ...loadEnv(config.mode, process.cwd(), ["PORT"]),
+  };
+  const { PORT } = process.env;
+  const isProd = config.mode === "production";
+  return {
+    build: {
+      lib: {
+        entry: ["./src/kk-adapt-export.ts"],
+      },
+      // 压缩
+      minify: false,
+      // 打包文件目录
+      outDir: "./dist",
+      rollupOptions: {
+        external: [
+          // React 生态系统
+          "react",
+          "react-dom",
+          // "react/jsx-runtime",
+          
+          // UI 组件库
+          "antd",
+          "@ant-design/icons",
+         
+          // Plate.js 相关
+          // /^@platejs\/.*/,
+          // "platejs",
+          // /^@udecode\/.*/,
+          "@radix-ui/react-accordion",
+          "@radix-ui/react-alert-dialog",
+          "@radix-ui/react-aspect-ratio",
+          "@radix-ui/react-avatar",
+          "@radix-ui/react-checkbox",
+          "@radix-ui/react-collapsible",
+          "@radix-ui/react-context-menu",
+          "@radix-ui/react-dialog",
+          "@radix-ui/react-dropdown-menu",
+          "@radix-ui/react-hover-card",
+          "@radix-ui/react-icons",
+          "@radix-ui/react-label",
+          "@radix-ui/react-menubar",
+          "@radix-ui/react-popover",
+          "@radix-ui/react-radio-group",
+          "@radix-ui/react-scroll-area",
+          "@radix-ui/react-select",
+          "@radix-ui/react-separator",
+          "@radix-ui/react-slot",
+          "@radix-ui/react-tabs",
+          "@radix-ui/react-toggle",
+          "@radix-ui/react-toggle-group",
+          "@radix-ui/react-toolbar",
+          "@radix-ui/react-tooltip",
+        ],
+        input: "./src/kk-adapt-export.ts",
+        output: [
+          {
+            // 配置打包根目录
+            dir: "./dist/es",
+            // 打包后文件名
+            entryFileNames: entryFileNamesFn,
+            exports: "named",
+            // 打包格式
+            format: "es",
+            inlineDynamicImports: false, // true会将动态导入的文件打包到一起
+            preserveModules:false,
+            // 让打包目录和我们目录对应
+            preserveModulesRoot: "src"
+            // manualChunks(id) {
+            //   // 将第三方库分离到 vendor chunk
+            //   if (id.includes('node_modules')) {
+            //     return id.split("/")?.at?.(-1)
+            //   }
+            // },
+          },
+          {
+            // 配置打包根目录
+            dir: "./dist/lib",
+            // 打包后文件名
+            entryFileNames: "[name].js",
+            exports: "named",
+            // 打包格式
+            format: "cjs",
+          },
+        ],
+        plugins: [nodeResolve(), nodeModulesPathPlugin()],
+      },
+    },
+    css: {
+      modules: {
+        localsConvention: "camelCaseOnly",
+      },
+      preprocessorOptions: {
+        less: {
+          additionalData: `
+						@import "${normalizePath(path.resolve("./src/assets/style/mixin.less"))}";
+					`,
+          javascriptEnabled: true,
+        },
+      },
+    },
+    optimizeDeps: {
+      esbuildOptions: {
+        drop: ["console"],
+      },
+      holdUntilCrawlEnd: true,
+    },
+    plugins: [
+      react(),
+      // dts({
+      //   entryRoot: "./src",
+      //   outDir: ["./dist/es", "./dist/lib"],
+      //   tsconfigPath: "./tsconfig.json",
+      // }),
+
+      // imp({
+      //   libList: [
+      //     {
+      //       libName: "antd",
+      //       style: (name) => `antd/es/${name}/style`,
+      //     },
+      //   ],
+      // }),
+    ],
+    resolve: {
+      alias: [
+        {
+          find: "~antd",
+          replacement: "antd",
+        },
+        {
+          find: "@",
+          replacement: path.resolve(__dirname, "src"),
+        },
+      ],
+    },
+    server: {
+      port: Number(PORT || 8080),
+    },
+  };
+});

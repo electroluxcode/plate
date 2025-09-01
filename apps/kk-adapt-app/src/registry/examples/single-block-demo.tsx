@@ -7,7 +7,7 @@ import { Plate, usePlateEditor } from 'platejs/react';
 
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { EditorKit } from '@/registry/components/editor/editor-kit';
+import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
 
 export default function SingleBlockDemo() {

@@ -6,7 +6,7 @@ import { useTheme } from 'next-themes';
 import { Plate, usePlateEditor, usePlateViewEditor } from 'platejs/react';
 
 import { Button } from '@/components/ui/button';
-import { EditorKit } from '@/registry/components/editor/editor-kit';
+import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
 import { Editor, EditorView } from '@/registry/ui/editor';
 
 import { BaseEditorKit } from './editor-base-kit';

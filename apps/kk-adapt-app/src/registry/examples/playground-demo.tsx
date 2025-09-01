@@ -9,12 +9,15 @@ import { Plate, usePlateEditor } from 'platejs/react';
 
 import { useLocale } from '@/hooks/useLocale';
 import { getI18nValues } from '@/i18n/getI18nValues';
-import { EditorKit } from '@/registry/components/editor/editor-kit';
+import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
 import { CopilotKit } from '@/registry/components/editor/plugins/copilot-kit';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
 
 import { joinRoom } from './kk-adapt-hooks/roomManage';
-
+const defaultValues =   [{
+  children: [{ text: '欢迎来到 Plate 演示平台！' }],
+  type: 'h1',
+}]
 const CONFIG = {
   authorization: "eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ==.eyJpc3MiOjY2MTk5MjczNzcyMzMyMjM2OSwiZXhwIjoxNzU4ODU2MDM3LCJzdWIiOiJKc29uIFdlYiBUb2tlbiIsImF1ZCI6bnVsbCwibmJmIjpudWxsLCJpYXQiOjE3NTYyNjQwMzcsImp0aSI6ODE5MTY0NTAzODE5NTc1Mjk4LCJjdXMiOnsiZGV2aWNlX2lkIjoiMTI3YzkxOGZhNDZjNjQ3OGFjY2M3MTRiZjFjZDRmZjQ0YWYxMTc0OGE1MmZiNDU0YmMzNmQ2YzU0YzNmN2NjMiIsInRlbmFudF9pZCI6MTgwNzA3MDAwNzUwNzd9fQ==.e7e3be516f5e272ccfbe0261a38ab97267e08140af81dd67a527423292acde37",
   fileId :"814862095570853888"
@@ -146,7 +149,7 @@ export default function PlaygroundDemo({
             maxRetries: 5,
           },
           url: 'wss://teamshare-document-service.t.cn-shenzhen.aliyun.kkgroup.work/ws?authorization=eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ==.eyJpc3MiOjY2MTk5MjczNzcyMzMyMjM2OSwiZXhwIjoxNzU3NTk5NzEyLCJzdWIiOiJKc29uIFdlYiBUb2tlbiIsImF1ZCI6bnVsbCwibmJmIjpudWxsLCJpYXQiOjE3NTUwMDc3MTIsImp0aSI6ODEzODk1MDk2NjQyOTI4NjQyLCJjdXMiOnsiZGV2aWNlX2lkIjoiZTAzZDhlM2IyMDE4NWJjOGU0Y2U2ZjdhYzY3NGRkOGM5ZmE0MmU1ZjEwMTFiNDJhZjVhMWVkMjhmOTM0MzU2OSIsInRlbmFudF9pZCI6MTgwNzA3MDAwNzUwNzd9fQ==.4b718417bfab65fba157f2f8f2e6d5e84f3ae5d8a23bf4a84f8f4240823eb7e5&organization_code=DT001', // ShareDB 服务器地址
-          value: getI18nValues(locale).playground, // 初始值（仅在文档为空时使用）
+          value: defaultValues, // 初始值（仅在文档为空时使用）
         });
 
         const options = editor.api.sharedb.getCtx().getOptions()
@@ -189,7 +192,9 @@ export default function PlaygroundDemo({
   // hack: 第1个入口(禁止删除)
   return (
     <Plate editor={editor}>
+      11
       <EditorContainer className={className}>
+        9999999
         <Editor
           variant="demo"
           className="pb-[20vh]"

@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Plate, usePlateEditor } from 'platejs/react';
 
-import { EditorKit } from '@/registry/components/editor/editor-kit';
+import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
 import { AutoformatKit } from '@/registry/components/editor/plugins/autoformat-classic-kit';
 import { FixedToolbarKit } from '@/registry/components/editor/plugins/fixed-toolbar-classic-kit';
 import { FloatingToolbarKit } from '@/registry/components/editor/plugins/floating-toolbar-classic-kit';
