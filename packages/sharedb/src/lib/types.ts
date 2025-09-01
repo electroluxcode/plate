@@ -1,5 +1,5 @@
-import type { Descendant } from 'slate';
 import type { PluginConfig } from 'platejs';
+import type { Descendant } from 'slate';
 
 /**
  * ShareDB 重连配置
@@ -38,7 +38,7 @@ export interface OtInitOptions {
   /** 文档集合名 */
   collection?: string;
   /** 初始文档值，仅当远程文档为空时应用 */
-  value?: Descendant[] | string | ((editor: any) => Descendant[] | Promise<Descendant[]>);
+  value?: ((editor: any) => Descendant[] | Promise<Descendant[]>) | Descendant[] | string;
   /** 是否自动连接 */
   autoConnect?: boolean;
   /** 重连配置 */
@@ -65,7 +65,7 @@ export interface OtOptions {
 /**
  * sharedb 连接状态
  */
-export type OtStatus = 'disconnected' | 'connecting' | 'connected' | 'ready' | 'error';
+export type OtStatus = 'connected' | 'connecting' | 'disconnected' | 'error' | 'ready';
 
 /**
  * sharedb 插件配置
@@ -73,31 +73,33 @@ export type OtStatus = 'disconnected' | 'connecting' | 'connected' | 'ready' | '
 export type OtConfig = PluginConfig<
   'sharedb',
   OtOptions & {
-    /** 当前连接状态 */
-    _status: OtStatus;
-    /** ShareDB 文档实例 */
-    _doc: any;
     /** ShareDB 连接实例 */
     _connection: any;
-    /** WebSocket 实例 */
-    _socket: any;
+    /** ShareDB 文档实例 */
+    _doc: any;
     /** 操作队列 */
     _operationQueue: (() => Promise<void> | void)[];
+    /** 在线状态 */
+    _presence: any;
     /** 是否正在处理操作队列 */
     _processingQueue: boolean;
+    /** WebSocket 实例 */
+    _socket: any;
+    /** 当前连接状态 */
+    _status: OtStatus;
   },
   {
-    /** 初始化连接和文档 */
-    init: (options?: OtInitOptions) => Promise<void>;
+    /** 应用远程操作 */
+    applyRemoteOperation: (operations: any[]) => void;
     /** 连接到 ShareDB */
     connect: () => Promise<void>;
     /** 断开连接 */
     disconnect: () => void;
     /** 获取当前状态 */
     getStatus: () => OtStatus;
+    /** 初始化连接和文档 */
+    init: (options?: OtInitOptions) => Promise<void>;
     /** 提交操作到 ShareDB */
     submitOp: (operations: any[]) => Promise<void>;
-    /** 应用远程操作 */
-    applyRemoteOperation: (operations: any[]) => void;
   }
 >; 

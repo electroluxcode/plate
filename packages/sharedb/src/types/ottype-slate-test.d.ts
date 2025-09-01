@@ -14,3 +14,7 @@ declare module 'ottype-slate-test' {
   const ottype: OtType;
   export = ottype;
 } 
+declare module 'sharedb-client-browser/dist/sharedb-client-umd.cjs' {
+  const sharedb: any;
+  export default sharedb;
+}

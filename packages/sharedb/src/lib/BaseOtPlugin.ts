@@ -1,7 +1,6 @@
 import type { Operation } from 'slate';
 
 import {
-  type Value,
   createTSlatePlugin,
 } from 'platejs';
 import { Transforms } from "slate"
@@ -18,15 +17,17 @@ export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
     _connection: null,
     _doc: null,
     _operationQueue: [],
+    _presence: null,
     _processingQueue: false,
     _socket: null,
     _status: 'disconnected' as OtStatus,
     debug: false,
     enablePresence: false,
-  } as OtOptions & {
+  } as unknown as OtOptions & {
     _connection: any;
     _doc: any;
     _operationQueue: (() => Promise<void> | void)[];
+    _presence: any;
     _processingQueue: boolean;
     _socket: any;
     _status: OtStatus;
@@ -93,7 +94,7 @@ export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
 
       // 动态导入 ShareDB 相关模块
       const [{ default: ShareDB }, { default: ReconnectingWebSocket }] = await Promise.all([
-        import('sharedb/lib/client'),
+        import('sharedb-client-browser/dist/sharedb-client-umd.cjs'),
         import('reconnecting-websocket'),
       ]);
 
@@ -117,8 +118,9 @@ export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
       // 创建 ShareDB 连接
       const connection = new ShareDB.Connection(socket as any);
       const doc = connection.get(options.sharedb.collection || 'documents', options.sharedb.documentId);
-
+  const presence = connection.getDocPresence(options.sharedb.collection || 'documents', options.sharedb.documentId)
       // 设置连接引用
+      setOption('_presence', presence);
       setOption('_socket', socket);
       setOption('_connection', connection);
       setOption('_doc', doc);
@@ -294,7 +296,7 @@ export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
       if (typeof value === 'string') {
         initialNodes = editor.api.html.deserialize({
           element: value,
-        }) as Value;
+        }) as any;
       } else if (typeof value === 'function') {
         initialNodes = await value(editor);
       } else if (value) {
