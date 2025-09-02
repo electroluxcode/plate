@@ -6,4 +6,3 @@ export * from './ExitBreakPlugin';
 export * from './normalize-types/index';
 export * from './single-block/index';
 export * from './trailing-block/index';
-export * from './custom-trailing-block/index';

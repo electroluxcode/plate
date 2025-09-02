@@ -12,6 +12,7 @@ import { withPlateOt } from './withPlateOt';
 
 export const BaseOtPlugin = createTSlatePlugin<OtConfig>({
   key: 'sharedb',
+  priority: 1000, // 设置较低优先级，确保在 NodeId 插件之后加载
   extendEditor: withPlateOt,
   options: {
     _connection: null,
