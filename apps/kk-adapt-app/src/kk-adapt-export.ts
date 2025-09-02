@@ -1,3 +1,6 @@
+// 导入 CSS 文件，这样会被 Vite 打包进库中
+import './app/globals.css';
+
 // export { joinRoom } from '@/registry/examples/kk-adapt-hooks/roomManage';
 // export  { useLocale } from '@/hooks/useLocale';
 // export  { getI18nValues } from '@/i18n/getI18nValues';
