@@ -1,0 +1,23 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+  "name": "ai-api",
+  "type": "registry:file",
+  "dependencies": [
+    "@ai-sdk/openai@1.3.23",
+    "ai@4.3.19",
+    "@ai-sdk/provider@1.1.3",
+    "@ai-sdk/provider-utils@2.2.8"
+  ],
+  "registryDependencies": [
+    "https://platejs.org/r/copilot-api",
+    "https://platejs.org/r/markdown-joiner-transform"
+  ],
+  "files": [
+    {
+      "path": "src/registry/app/api/ai/command/route.ts",
+      "content": "import type { NextRequest } from 'next/server';\n\nimport { createOpenAI } from '@ai-sdk/openai';\nimport { convertToCoreMessages, streamText } from 'ai';\nimport { NextResponse } from 'next/server';\n\nimport { markdownJoinerTransform } from '@/registry/lib/markdown-joiner-transform';\n\nexport async function POST(req: NextRequest) {\n  const { apiKey: key, messages, system } = await req.json();\n\n  const apiKey = key || process.env.OPENAI_API_KEY;\n\n  if (!apiKey) {\n    return NextResponse.json(\n      { error: 'Missing OpenAI API key.' },\n      { status: 401 }\n    );\n  }\n\n  const openai = createOpenAI({ apiKey });\n\n  try {\n    const result = streamText({\n      experimental_transform: markdownJoinerTransform(),\n      maxTokens: 2048,\n      messages: convertToCoreMessages(messages),\n      model: openai('gpt-4o'),\n      system: system,\n    });\n\n    return result.toDataStreamResponse();\n  } catch {\n    return NextResponse.json(\n      { error: 'Failed to process AI request' },\n      { status: 500 }\n    );\n  }\n}\n",
+      "type": "registry:file",
+      "target": "app/api/ai/command/route.ts"
+    }
+  ]
+}
