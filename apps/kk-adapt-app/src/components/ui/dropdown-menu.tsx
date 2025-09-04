@@ -21,25 +21,43 @@ function DropdownMenuPortal({
   );
 }
 
-function DropdownMenuTrigger({
-  ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>) {
+const DropdownMenuTrigger = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Trigger>,
+  React.ComponentProps<typeof DropdownMenuPrimitive.Trigger>
+>(({ ...props }, ref) => {
+  
   return (
     <DropdownMenuPrimitive.Trigger
+      ref={ref}
       data-slot="dropdown-menu-trigger"
       {...props}
     />
   );
-}
+});
 
-function DropdownMenuContent({
+DropdownMenuTrigger.displayName = 'DropdownMenuTrigger';
+
+const DropdownMenuContent = React.forwardRef<
+  React.ElementRef<typeof DropdownMenuPrimitive.Content>,
+  React.ComponentProps<typeof DropdownMenuPrimitive.Content>
+>(({
   className,
   sideOffset = 4,
   ...props
-}: React.ComponentProps<typeof DropdownMenuPrimitive.Content>) {
+}, ref) => {
+  
+  const contentRef = React.useCallback((node: HTMLDivElement | null) => {
+    if (typeof ref === 'function') {
+      ref(node);
+    } else if (ref) {
+      ref.current = node;
+    }
+  }, [ref]);
+
   return (
     <DropdownMenuPrimitive.Portal>
       <DropdownMenuPrimitive.Content
+        ref={contentRef}
         className={cn(
           'z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
           className
@@ -50,7 +68,9 @@ function DropdownMenuContent({
       />
     </DropdownMenuPrimitive.Portal>
   );
-}
+});
+
+DropdownMenuContent.displayName = 'DropdownMenuContent';
 
 function DropdownMenuGroup({
   ...props

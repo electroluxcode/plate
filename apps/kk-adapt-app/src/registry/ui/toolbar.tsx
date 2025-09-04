@@ -16,17 +16,23 @@ import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 
-export function Toolbar({
+export const Toolbar = React.forwardRef<
+  React.ElementRef<typeof ToolbarPrimitive.Root>,
+  React.ComponentProps<typeof ToolbarPrimitive.Root>
+>(({
   className,
   ...props
-}: React.ComponentProps<typeof ToolbarPrimitive.Root>) {
+}, ref) => {
   return (
     <ToolbarPrimitive.Root
+      ref={ref}
       className={cn('relative flex items-center select-none', className)}
       {...props}
     />
   );
-}
+});
+
+Toolbar.displayName = 'Toolbar';
 
 export function ToolbarToggleGroup({
   className,
@@ -121,7 +127,10 @@ type ToolbarButtonProps = {
 > &
   VariantProps<typeof toolbarButtonVariants>;
 
-export const ToolbarButton = withTooltip(function ToolbarButton({
+const ToolbarButtonBase = React.forwardRef<
+  HTMLButtonElement,
+  ToolbarButtonProps
+>(({
   children,
   className,
   isDropdown,
@@ -129,10 +138,11 @@ export const ToolbarButton = withTooltip(function ToolbarButton({
   size = 'sm',
   variant,
   ...props
-}: ToolbarButtonProps) {
+}, ref) => {
   return typeof pressed === 'boolean' ? (
     <ToolbarToggleGroup disabled={props.disabled} value="single" type="single">
       <ToolbarToggleItem
+        ref={ref}
         className={cn(
           toolbarButtonVariants({
             size,
@@ -163,6 +173,7 @@ export const ToolbarButton = withTooltip(function ToolbarButton({
     </ToolbarToggleGroup>
   ) : (
     <ToolbarPrimitive.Button
+      ref={ref}
       className={cn(
         toolbarButtonVariants({
           size,
@@ -177,6 +188,10 @@ export const ToolbarButton = withTooltip(function ToolbarButton({
     </ToolbarPrimitive.Button>
   );
 });
+
+ToolbarButtonBase.displayName = 'ToolbarButton';
+
+export const ToolbarButton = withTooltip(ToolbarButtonBase);
 
 export function ToolbarSplitButton({
   className,
@@ -196,15 +211,19 @@ type ToolbarSplitButtonPrimaryProps = Omit<
 > &
   VariantProps<typeof toolbarButtonVariants>;
 
-export function ToolbarSplitButtonPrimary({
+export const ToolbarSplitButtonPrimary = React.forwardRef<
+  HTMLSpanElement,
+  ToolbarSplitButtonPrimaryProps
+>(({
   children,
   className,
   size = 'sm',
   variant,
   ...props
-}: ToolbarSplitButtonPrimaryProps) {
+}, ref) => {
   return (
     <span
+      ref={ref}
       className={cn(
         toolbarButtonVariants({
           size,
@@ -219,17 +238,23 @@ export function ToolbarSplitButtonPrimary({
       {children}
     </span>
   );
-}
+});
 
-export function ToolbarSplitButtonSecondary({
+ToolbarSplitButtonPrimary.displayName = 'ToolbarSplitButtonPrimary';
+
+export const ToolbarSplitButtonSecondary = React.forwardRef<
+  HTMLSpanElement,
+  React.ComponentPropsWithoutRef<'span'> &
+    VariantProps<typeof dropdownArrowVariants>
+>(({
   className,
   size,
   variant,
   ...props
-}: React.ComponentPropsWithoutRef<'span'> &
-  VariantProps<typeof dropdownArrowVariants>) {
+}, ref) => {
   return (
     <span
+      ref={ref}
       className={cn(
         dropdownArrowVariants({
           size,
@@ -245,34 +270,48 @@ export function ToolbarSplitButtonSecondary({
       <ChevronDown className="size-3.5 text-muted-foreground" data-icon />
     </span>
   );
-}
+});
 
-export function ToolbarToggleItem({
+ToolbarSplitButtonSecondary.displayName = 'ToolbarSplitButtonSecondary';
+
+export const ToolbarToggleItem = React.forwardRef<
+  React.ElementRef<typeof ToolbarPrimitive.ToggleItem>,
+  React.ComponentProps<typeof ToolbarPrimitive.ToggleItem> &
+    VariantProps<typeof toolbarButtonVariants>
+>(({
   className,
   size = 'sm',
   variant,
   ...props
-}: React.ComponentProps<typeof ToolbarPrimitive.ToggleItem> &
-  VariantProps<typeof toolbarButtonVariants>) {
+}, ref) => {
   return (
     <ToolbarPrimitive.ToggleItem
+      ref={ref}
       className={cn(toolbarButtonVariants({ size, variant }), className)}
       {...props}
     />
   );
-}
+});
 
-export function ToolbarGroup({
+ToolbarToggleItem.displayName = 'ToolbarToggleItem';
+
+export const ToolbarGroup = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<'div'>
+>(({
   children,
   className,
-}: React.ComponentProps<'div'>) {
+  ...props
+}, ref) => {
   return (
     <div
+      ref={ref}
       className={cn(
         'group/toolbar-group',
         'relative hidden has-[button]:flex',
         className
       )}
+      {...props}
     >
       <div className="flex items-center">{children}</div>
 
@@ -281,12 +320,14 @@ export function ToolbarGroup({
       </div>
     </div>
   );
-}
+});
+
+ToolbarGroup.displayName = 'ToolbarGroup';
 
 type TooltipProps<T extends React.ElementType> = {
   tooltip?: React.ReactNode;
   tooltipContentProps?: Omit<
-    React.ComponentPropsWithoutRef<typeof TooltipContent>,
+    React.ComponentPropsWithoutRef<typeof TooltipContentWithDebug>,
     'children'
   >;
   tooltipProps?: Omit<
@@ -297,20 +338,41 @@ type TooltipProps<T extends React.ElementType> = {
 } & React.ComponentProps<T>;
 
 function withTooltip<T extends React.ElementType>(Component: T) {
-  return function ExtendComponent({
+  const ExtendComponent = React.forwardRef<
+    any,
+    TooltipProps<T>
+  >(({
     tooltip,
     tooltipContentProps,
     tooltipProps,
     tooltipTriggerProps,
     ...props
-  }: TooltipProps<T>) {
+  }, ref) => {
     const [mounted, setMounted] = React.useState(false);
+    const triggerRef = React.useRef<HTMLElement>(null);
 
     React.useEffect(() => {
       setMounted(true);
     }, []);
 
-    const component = <Component {...(props as React.ComponentProps<T>)} />;
+
+    // 创建组件，始终尝试传递 ref，让 React 自己处理警告
+    const component = React.createElement(Component, {
+      ref: (node: any) => {
+        // 合并 ref
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+        
+        // 保存触发器引用用于调试
+        triggerRef.current = node;
+        
+      },
+      ...(props as any)
+    });
+
 
     if (tooltip && mounted) {
       return (
@@ -319,25 +381,38 @@ function withTooltip<T extends React.ElementType>(Component: T) {
             {component}
           </TooltipTrigger>
 
-          <TooltipContent {...tooltipContentProps}>{tooltip}</TooltipContent>
+          <TooltipContentWithDebug {...tooltipContentProps}>{tooltip}</TooltipContentWithDebug>
         </Tooltip>
       );
     }
 
     return component;
-  };
+  });
+
+  ExtendComponent.displayName = `withTooltip(${
+    typeof Component === 'string' 
+      ? Component 
+      : (Component as any).displayName || (Component as any).name || 'Component'
+  })`;
+  
+  return ExtendComponent;
 }
 
-function TooltipContent({
+function TooltipContentWithDebug({
   children,
   className,
   // CHANGE
   sideOffset = 4,
   ...props
 }: React.ComponentProps<typeof TooltipPrimitive.Content>) {
+  const contentRef = React.useRef<HTMLDivElement>(null);
+  
+ 
+
   return (
     <TooltipPrimitive.Portal>
       <TooltipPrimitive.Content
+        ref={contentRef}
         className={cn(
           'z-50 w-fit origin-(--radix-tooltip-content-transform-origin) rounded-md bg-primary px-3 py-1.5 text-xs text-balance text-primary-foreground',
           className
