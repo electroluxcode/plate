@@ -3,9 +3,10 @@
 import * as React from 'react';
 
 import {
+  BaselineIcon,
   BoldIcon,
-  Code2Icon,
   ItalicIcon,
+  PaintBucketIcon,
   StrikethroughIcon,
   UnderlineIcon,
   WandSparklesIcon,
@@ -15,7 +16,8 @@ import { useEditorReadOnly } from 'platejs/react';
 
 import { AIToolbarButton } from './ai-toolbar-button';
 import { CommentToolbarButton } from './comment-toolbar-button';
-import { InlineEquationToolbarButton } from './equation-toolbar-button';
+import { FontColorToolbarButton } from './font-color-toolbar-button';
+import { FontSizeToolbarButton } from './font-size-toolbar-button';
 import { LinkToolbarButton } from './link-toolbar-button';
 import { MarkToolbarButton } from './mark-toolbar-button';
 import { MoreToolbarButton } from './more-toolbar-button';
@@ -39,7 +41,10 @@ export function FloatingToolbarButtons() {
 
           <ToolbarGroup>
             <TurnIntoToolbarButton />
+            <FontSizeToolbarButton />
+          </ToolbarGroup>
 
+          <ToolbarGroup>
             <MarkToolbarButton nodeType={KEYS.bold} tooltip="Bold (⌘+B)">
               <BoldIcon />
             </MarkToolbarButton>
@@ -62,13 +67,18 @@ export function FloatingToolbarButtons() {
               <StrikethroughIcon />
             </MarkToolbarButton>
 
-            <MarkToolbarButton nodeType={KEYS.code} tooltip="Code (⌘+E)">
-              <Code2Icon />
-            </MarkToolbarButton>
-
-            <InlineEquationToolbarButton />
-
             <LinkToolbarButton />
+
+            <FontColorToolbarButton nodeType={KEYS.color} tooltip="Text color">
+              <BaselineIcon />
+            </FontColorToolbarButton>
+
+            <FontColorToolbarButton
+              nodeType={KEYS.backgroundColor}
+              tooltip="Background color"
+            >
+              <PaintBucketIcon />
+            </FontColorToolbarButton>
           </ToolbarGroup>
         </>
       )}

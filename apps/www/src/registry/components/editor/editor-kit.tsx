@@ -76,7 +76,7 @@ export const EditorKit = [
   ...DndKit,
   ...EmojiKit,
   ...ExitBreakKit,
-  TrailingBlockPlugin,
+  // TrailingBlockPlugin,
 
   // Parsers
   ...DocxKit,
