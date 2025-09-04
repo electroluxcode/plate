@@ -658,7 +658,6 @@ describe('fixures', () => {
   });
 
   it('should deserialize image within list', () => {
-
     const input = '- ![alt text](https://example.com/image.png)';
 
     expect(deserializeMd(editor, input)).toMatchSnapshot();

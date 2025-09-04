@@ -7,21 +7,51 @@ import {
 import { createText } from './internals/creators';
 import { createHyperscript } from './internals/hyperscript';
 
+export { createEditor } from './internals/creators';
+export { createHyperscript };
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      [key: string]: any;
-
       anchor: any;
       cursor: any;
       editor: any;
       element: any;
       focus: any;
       fragment: any;
+      ha: any;
+      haudio: any;
+      hblockquote: any;
+      hcallout: any;
+      hcodeblock: any;
+      hcodeline: any;
+      hcolumn: any;
+      hcolumngroup: any;
+      hdate: any;
+      hdefault: any;
+      hequation: any;
+      hexcalidraw: any;
+      hfile: any;
+      hh1: any;
+      hh2: any;
+      hh3: any;
+      hh4: any;
+      hh5: any;
+      hh6: any;
+      himg: any;
+      hinlineequation: any;
       hli: any;
+      hlic: any;
+      hmediaembed: any;
+      hmention: any;
+      hmentioninput: any;
+      hnli: any;
       hol: any;
       hp: any;
+      hplaceholder: any;
+      htable: any;
+      htd: any;
       htext: {
         [key: string]: any;
         // These optional params will show up in the autocomplete!
@@ -31,15 +61,22 @@ declare global {
         italic?: boolean;
         underline?: boolean;
       };
+      hth: any;
+      htoc: any;
+      htodoli: any;
+      htoggle: any;
+      htr: any;
       hul: any;
+      hvideo: any;
       selection: any;
+      text: any;
     }
   }
 }
 
-const voidChildren = [{ text: '' }];
+export const voidChildren = [{ text: '' }];
 
-const elements: HyperscriptShorthands = {
+export const elements: HyperscriptShorthands = {
   ha: { type: 'a' },
   haudio: { children: voidChildren, type: 'audio' },
   hblockquote: { type: 'blockquote' },

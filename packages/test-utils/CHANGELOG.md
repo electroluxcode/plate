@@ -1,5 +1,23 @@
 # @platejs/test-utils
 
+## 49.2.21
+
+### Patch Changes
+
+- [#4600](https://github.com/udecode/plate/pull/4600) by [@zbeyens](https://github.com/zbeyens) – slate 0.118
+
+## 49.2.16
+
+### Patch Changes
+
+- [#4578](https://github.com/udecode/plate/pull/4578) by [@delijah](https://github.com/delijah) – Remove overriding of index signature on `JSX.IntrinsicElements`, in order to avoid error messages on react jsx elements
+
+## 49.2.13
+
+### Patch Changes
+
+- [#4573](https://github.com/udecode/plate/pull/4573) by [@delijah](https://github.com/delijah) – Export voidChildren, elements and createEditor from jsx, in order to create more customised jsx solutions
+
 ## 49.2.4
 
 ## 49.1.13
