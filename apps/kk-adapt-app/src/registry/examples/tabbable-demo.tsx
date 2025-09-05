@@ -14,7 +14,7 @@ import {
 } from 'platejs/react';
 
 import { cn } from '@/lib/utils';
-import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
+import { EditorKit } from '@/kk-adapt-plugin-kit';
 import { tabbableValue } from '@/registry/examples/values/tabbable-value';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
 

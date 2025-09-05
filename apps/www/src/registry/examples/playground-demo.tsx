@@ -2,15 +2,14 @@
 
 import * as React from 'react';
 
-import { PlaywrightPlugin } from '@platejs/playwright';
-import { KEYS, NormalizeTypesPlugin } from 'platejs';
+import { KEYS } from 'platejs';
 import { Plate, usePlateEditor } from 'platejs/react';
-
+import { TrailingBlockPlugin } from '@platejs/utils-custom';
 import { useLocale } from '@/hooks/useLocale';
 import { getI18nValues } from '@/i18n/getI18nValues';
 import { EditorKit } from '@/registry/components/editor/editor-kit';
-import { CopilotKit } from '@/registry/components/editor/plugins/copilot-kit';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
+import { ReactEditor } from 'slate-react';
 
 export default function PlaygroundDemo({
   id,
@@ -34,24 +33,31 @@ export default function PlaygroundDemo({
         },
       },
       plugins: [
-        ...CopilotKit,
+        // ...CopilotKit,
         ...EditorKit,
-
-        NormalizeTypesPlugin.configure({
-          enabled: id === 'forced-layout',
+        TrailingBlockPlugin.configure({
           options: {
-            rules: [{ path: [0], strictType: 'h1' }],
+            type: 'p', // 段落块
+            match: (e)=>{
+              return e.listStyleType
+            },
+            filter: () => {
+              const isend = editor.api.isAt({ end: true })
+              return isend;
+            }
           },
         }),
 
         // Testing
-        PlaywrightPlugin,
+        // PlaywrightPlugin,
       ],
       value,
     },
     []
   );
 
+  // editor.api.toDOMNode = ReactEditor.toDOMNode;
+  window.editor = editor;
   return (
     <Plate editor={editor}>
       <EditorContainer className={className}>

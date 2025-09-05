@@ -4,8 +4,12 @@ import { globSync } from 'glob';
 
 const nextConfig = async (phase: string) => {
   const config: NextConfig = {
-    // https://nextjs.org/docs/basic-features/image-optimization#domains
+    // 导出为静态 SPA
+    output: 'export',
+    
+    // 禁用图片优化（静态导出不支持）
     images: {
+      unoptimized: true,
       remotePatterns: [
         {
           hostname: 'cdn.discordapp.com',
@@ -25,6 +29,9 @@ const nextConfig = async (phase: string) => {
         },
       ],
     },
+    
+    // 禁用 trailing slash 以避免路由问题
+    trailingSlash: true,
     outputFileTracingIncludes: {
       '/api/registry/*': ['./src/registry/**/*'],
       '/blocks/slate-to-html': ['./public/tailwind.css'],

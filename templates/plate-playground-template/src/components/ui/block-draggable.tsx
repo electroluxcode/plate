@@ -127,6 +127,7 @@ function Draggable(props: PlateElementProps) {
       )}
       onMouseEnter={() => {
         if (isDragging) return;
+        console.log("onMouseEnter-zptest12", element)
         setDragButtonTop(calcDragButtonTop(editor, element));
       }}
     >
@@ -247,7 +248,7 @@ const DragHandle = React.memo(function DragHandle({
           onMouseDown={(e) => {
             resetPreview();
 
-            if (e.button !== 0 || e.shiftKey) return;
+            if ((e.button !== 0 && e.button !== 2) || e.shiftKey) return;
 
             const blockSelection = editor
               .getApi(BlockSelectionPlugin)
@@ -504,7 +505,8 @@ const calculatePreviewTop = (
 
 const calcDragButtonTop = (editor: PlateEditor, element: TElement): number => {
   const child = editor.api.toDOMNode(element)!;
-
+  
+  console.log("debug: child", child)
   const currentMarginTopString = window.getComputedStyle(child).marginTop;
   const currentMarginTop = Number(currentMarginTopString.replace('px', ''));
 

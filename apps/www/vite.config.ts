@@ -87,17 +87,8 @@ export default defineConfig((config): UserConfig => {
             //   }
             // },
           },
-          {
-            // 配置打包根目录
-            dir: "./dist/lib",
-            // 打包后文件名
-            entryFileNames: "[name].js",
-            exports: "named",
-            // 打包格式
-            format: "cjs"
-          },
         ],
-        plugins: [nodeResolve()],
+        // plugins: [nodeResolve()],
       },
     },
     css: {
@@ -106,9 +97,6 @@ export default defineConfig((config): UserConfig => {
       },
       preprocessorOptions: {
         less: {
-          additionalData: `
-						@import "${normalizePath(path.resolve("./src/assets/style/mixin.less"))}";
-					`,
           javascriptEnabled: true,
         },
       },

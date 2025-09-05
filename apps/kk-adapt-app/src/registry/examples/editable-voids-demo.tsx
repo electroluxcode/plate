@@ -9,7 +9,7 @@ import { createPlatePlugin, Plate, usePlateEditor } from 'platejs/react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
+import { EditorKit } from '@/kk-adapt-plugin-kit';
 import { editableVoidsValue } from '@/registry/examples/values/editable-voids-value';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
 

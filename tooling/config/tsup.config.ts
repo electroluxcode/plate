@@ -30,7 +30,7 @@ export default defineConfig((opts) => {
   const options: Options = {
     ...opts,
     clean: true,
-    dts: true,
+    dts: false,
     format: ['cjs', 'esm'],
     sourcemap: true,
     splitting: false,

@@ -8,7 +8,7 @@ import remarkEmoji from 'remark-emoji';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 
-import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
+import { EditorKit } from '@/kk-adapt-plugin-kit';
 import { useDebounce } from '@/registry/hooks/use-debounce';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
 

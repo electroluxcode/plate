@@ -38,23 +38,6 @@ const block: any = {
 
 export default function PlaygroundPage() {
   return (
-    <div
-      className={cn('themes-wrapper bg-background', block.container?.className)}
-    >
-      {/* <BlockWrapper block={block}> */}
-      <Suspense fallback={null}>
-        <PlaygroundDemo className="h-dvh" />
-      </Suspense>
-      {/* {chunks?.map((chunk, index) => (
-          <BlockChunk
-            key={chunk.name}
-            block={block}
-            chunk={block.chunks?.[index]}
-          >
-            <chunk.component />
-          </BlockChunk>
-        ))} */}
-      {/* </BlockWrapper> */}
-    </div>
+    <PlaygroundDemo className="h-dvh" />
   );
 }

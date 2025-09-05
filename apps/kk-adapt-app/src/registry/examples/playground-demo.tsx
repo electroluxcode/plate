@@ -3,17 +3,15 @@
 import * as React from 'react';
 
 import { ShareDBPlugin } from '@platejs/sharedb/react';
-import {TrailingBlockPlugin} from '@platejs/utils'
 import { KEYS, NormalizeTypesPlugin } from 'platejs';
 import { Plate, usePlateEditor } from 'platejs/react';
-
+import { TrailingBlockPlugin } from '@platejs/utils-custom';
 import { useLocale } from '@/hooks/useLocale';
-import { getI18nValues } from '@/i18n/getI18nValues';
-import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
+import { EditorKit } from '@/kk-adapt-plugin-kit';
 import { CopilotKit } from '@/registry/components/editor/plugins/copilot-kit';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
 
-import { joinRoom } from './kk-adapt-hooks/roomManage';
+// import { joinRoom } from './kk-adapt-hooks/roomManage';
 const defaultValues =   [{
   children: [{ text: '欢迎来到 Plate 演示平台！' }],
   type: 'h1',
@@ -39,7 +37,7 @@ export default function PlaygroundDemo({
     {
       override: {
         enabled: {
-          [KEYS.copilot]: id === 'copilot',
+          [KEYS.copilot]: true,
           // [KEYS.indent]: id !== 'listClassic',
           // [KEYS.list]: id !== 'listClassic',
           [KEYS.listClassic]: true,
@@ -52,8 +50,12 @@ export default function PlaygroundDemo({
         TrailingBlockPlugin.configure({
           options: {
             type: 'p', // 段落块
+            match: (e)=>{
+              return e.listStyleType
+            },
             filter: (node: any) => {
               // 当 listStyleType 是 "disc" 时触发
+              console.log("log-test-fliter:", node)
               const shouldTrigger = node?.[0]?.listStyleType === 'disc' || node?.[0]?.listStyleType === 'decimal';
               return shouldTrigger;
             }
@@ -61,68 +63,61 @@ export default function PlaygroundDemo({
         }),
 
         // sharedb 协作编辑插件 - 简化配置
-        ShareDBPlugin.configure({
-          enabled: true,
-          options: {
-            debug: true,
-            enablePresence: false,
-            onConnect: () => {
-              console.log('✅ sharedb: Connected to ShareDB server');
-              console.log('🎉 sharedb: Ready for collaborative editing!');
-              setIsOtReady(true);
-            },
-            onDisconnect: () => {
-              console.log('❌ sharedb: Disconnected from ShareDB server');
-              console.log('💡 sharedb: Make sure ShareDB server is running on ws://localhost:8111');
-              setIsOtReady(false);
-            },
-            onError: (error: any) => {
-              console.error('🚨 sharedb Error:', error);
-              console.error('🔍 sharedb Error details:', {
-                code: error?.code,
-                message: error?.message,
-                stack: error?.stack,
-                type: error?.type
-              });
-              setIsOtReady(false);
-            },
-            onStatusChange: (status: any) => {
-              console.log('🔄 sharedb Status changed:', status);
-              
-              // 添加状态特定的提示
-              switch(status) {
-                case 'connected': {
-                  console.log('🌟 sharedb: Successfully connected to ShareDB!');
-                  break;
+          ShareDBPlugin.configure({
+            enabled: true,
+            options: {
+              debug: true,
+              enablePresence: false,
+              onConnect: () => {
+                console.log('✅ sharedb: Connected to ShareDB server');
+                console.log('🎉 sharedb: Ready for collaborative editing!');
+                setIsOtReady(true);
+              },
+              onDisconnect: () => {
+                console.log('❌ sharedb: Disconnected from ShareDB server');
+                console.log('💡 sharedb: Make sure ShareDB server is running on ws://localhost:8111');
+                setIsOtReady(false);
+              },
+              onError: (error: any) => {
+                console.error('🚨 sharedb Error:', error);
+                console.error('🔍 sharedb Error details:', {
+                  code: error?.code,
+                  message: error?.message,
+                  stack: error?.stack,
+                  type: error?.type
+                });
+                setIsOtReady(false);
+              },
+              onStatusChange: (status: any) => {
+                console.log('🔄 sharedb Status changed:', status);
+                
+                // 添加状态特定的提示
+                switch(status) {
+                  case 'connected': {
+                    console.log('🌟 sharedb: Successfully connected to ShareDB!');
+                    break;
+                  }
+                  case 'connecting': {
+                    console.log('📡 sharedb: Attempting to connect to ws://localhost:8111...');
+                    break;
+                  }
+                  case 'disconnected': {
+                    console.log('⚠️ sharedb: Connection lost. Check if ShareDB server is running.');
+                    break;
+                  }
+                  case 'error': {
+                    console.log('💥 sharedb: Connection error occurred.');
+                    break;
+                  }
                 }
-                case 'connecting': {
-                  console.log('📡 sharedb: Attempting to connect to ws://localhost:8111...');
-                  break;
-                }
-                case 'disconnected': {
-                  console.log('⚠️ sharedb: Connection lost. Check if ShareDB server is running.');
-                  break;
-                }
-                case 'error': {
-                  console.log('💥 sharedb: Connection error occurred.');
-                  break;
-                }
-              }
+              },
             },
-          },
-        }),
-
-        NormalizeTypesPlugin.configure({
-          enabled: id === 'forced-layout',
-          options: {
-            rules: [{ path: [0], strictType: 'h1' }],
-          },
-        }),
+          }),
 
       ],
       // 重要：使用 sharedb 时需跳过默认初始化
       
-      skipInitialization: true,
+      skipInitialization: false,
     },
     []
   );
@@ -155,7 +150,7 @@ export default function PlaygroundDemo({
         const options = editor.api.sharedb.getCtx().getOptions()
         console.log("initOtConnection-test-zptest111", options)
         setSocket(options._socket)
-        joinRoom(options._socket, { authorization: CONFIG.authorization, fileId: CONFIG.fileId })
+        // joinRoom(options._socket, { authorization: CONFIG.authorization, fileId: CONFIG.fileId })
         console.log('✅ PlaygroundDemo: sharedb plugin initialized successfully');
       } catch (error) {
         console.error('❌ PlaygroundDemo: Failed to initialize sharedb plugin:', error);
@@ -192,9 +187,8 @@ export default function PlaygroundDemo({
   // hack: 第1个入口(禁止删除)
   return (
     <Plate editor={editor}>
-      11
       <EditorContainer className={className}>
-        9999999
+
         <Editor
           variant="demo"
           className="pb-[20vh]"

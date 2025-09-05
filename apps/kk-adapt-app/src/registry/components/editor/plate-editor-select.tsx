@@ -2,7 +2,7 @@
 
 import { Plate, usePlateEditor } from 'platejs/react';
 
-import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
+import { EditorKit } from '@/kk-adapt-plugin-kit';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
 
 export function PlateEditor() {

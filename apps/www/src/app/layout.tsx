@@ -1,6 +1,6 @@
-import React from 'react';
+'use client';
 
-import type { Metadata, Viewport } from 'next';
+import React from 'react';
 
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
@@ -14,71 +14,39 @@ import { cn } from '@/lib/utils';
 
 import '@/app/globals.css';
 
-export const metadata: Metadata = {
-  authors: [
-    {
-      name: siteConfig.author,
-      url: siteConfig.links.github,
-    },
-  ],
-  creator: siteConfig.author,
-  description: siteConfig.description,
-  icons: {
-    apple: '/apple-touch-icon.png',
-    icon: '/favicon.ico',
-    shortcut: '/favicon-48x48.png',
-  },
-  keywords: [
-    'Plate',
-    'Slate',
-    'editor',
-    'wysiwyg',
-    'Tailwind CSS',
-    'Radix UI',
-    'shadcn/ui',
-    'React',
-    'Next.js',
-  ],
-  manifest: `${siteConfig.url}/site.webmanifest`,
-  metadataBase: new URL(siteConfig.url),
-  openGraph: {
-    description: siteConfig.description,
-    images: [
-      {
-        alt: siteConfig.name,
-        height: 630,
-        url: siteConfig.ogImage,
-        width: 1200,
-      },
-    ],
-    locale: 'en_US',
-    siteName: siteConfig.name,
-    title: siteConfig.name,
-    type: 'website',
-    url: siteConfig.url,
-  },
-  title: {
-    default: siteConfig.name,
-    template: `%s - ${siteConfig.name}`,
-  },
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@zbeyens',
-    description: siteConfig.description,
-    images: [siteConfig.ogImage],
-    title: siteConfig.name,
-  },
-};
+// 由于使用了 'use client'，需要移除 metadata 导出
+// 可以使用 next/head 在客户端设置 metadata
+// export const metadata: Metadata = { ... }
 
-export const viewport: Viewport = {
-  themeColor: META_THEME_COLORS.light,
-};
+// export const viewport: Viewport = {
+//   themeColor: META_THEME_COLORS.light,
+// };
 
 interface RootLayoutProps {
   children: React.ReactNode;
 }
 
 export default function RootLayout({ children }: RootLayoutProps) {
+  // 客户端设置 metadata
+  React.useEffect(() => {
+    document.title = siteConfig.name;
+    
+    // 设置 meta 标签
+    const setMetaTag = (name: string, content: string) => {
+      let meta = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
+      if (!meta) {
+        meta = document.createElement('meta');
+        meta.name = name;
+        document.head.append(meta);
+      }
+      meta.content = content;
+    };
+
+    setMetaTag('description', siteConfig.description);
+    setMetaTag('theme-color', META_THEME_COLORS.light);
+    setMetaTag('viewport', 'width=device-width, initial-scale=1');
+  }, []);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

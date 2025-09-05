@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { Plate, usePlateEditor } from 'platejs/react';
 
-import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
+import { EditorKit } from '@/kk-adapt-plugin-kit';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
 
 import { DEMO_VALUES } from './values/demo-values';

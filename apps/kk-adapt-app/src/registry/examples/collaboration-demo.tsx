@@ -14,7 +14,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { EditorKit } from '@/registry/components/editor/kk-adapt-plugin-kit';
+import { EditorKit } from '@/kk-adapt-plugin-kit';
 import { useMounted } from '@/registry/hooks/use-mounted';
 import { Editor, EditorContainer } from '@/registry/ui/editor';
 import { RemoteCursorOverlay } from '@/registry/ui/remote-cursor-overlay';
