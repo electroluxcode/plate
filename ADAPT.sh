@@ -50,7 +50,7 @@ cat > package.json << 'EOF'
 EOF
 
 echo "📥 安装发版依赖..."
-npm install
+npm install -f
 
 echo "🏗️  开始构建项目..."
 # 由于我们简化了 package.json，需要确保构建能正常进行
