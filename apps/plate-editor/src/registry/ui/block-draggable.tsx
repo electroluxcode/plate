@@ -5,8 +5,8 @@ import * as React from 'react';
 import { DndPlugin, useDraggable, useDropLine } from '@platejs/dnd';
 import { expandListItemsWithChildren } from '@platejs/list';
 import { BlockSelectionPlugin } from '@platejs/selection/react';
-import { GripVertical } from 'lucide-react';
-import { type TElement, getPluginByType, isType, KEYS } from 'platejs';
+import { GripVertical, Plus } from 'lucide-react';
+import { type TElement, getPluginByType, isType, KEYS, PathApi } from 'platejs';
 import {
   type PlateEditor,
   type PlateElementProps,
@@ -146,6 +146,59 @@ function Draggable(props: PlateElementProps) {
                 isInColumn && 'mr-1.5'
               )}
             >
+              <PlusButton
+                style={{ top: `${dragButtonTop + 3}px` }}
+                onClick={() => {
+                  const elementPath = editor.api.findPath(element);
+                  if (!elementPath) return;
+
+                  // 检查当前元素是否为表格
+                  const isTableElement = isType(editor, element, KEYS.table);
+                  
+                  if (isTableElement) {
+                    // 如果是表格，在表格后插入一个新的段落，包含 "/"
+                    const nextPath = PathApi.next(elementPath);
+                    const newParagraph = editor.api.create.block({
+                      type: KEYS.p,
+                      children: [{ text: '/' }]
+                    });
+                    
+                    editor.tf.insertNodes(newParagraph, {
+                      at: nextPath,
+                      select: true
+                    });
+                    
+                    // 将光标定位到 "/" 后面
+                    editor.tf.select({
+                      anchor: { path: [...nextPath, 0], offset: 1 },
+                      focus: { path: [...nextPath, 0], offset: 1 }
+                    });
+                  } else {
+                    // 如果不是表格，在当前元素开始位置插入 "/" 字符
+                    editor.tf.select({
+                      anchor: { path: [...elementPath, 0], offset: 0 },
+                      focus: { path: [...elementPath, 0], offset: 0 }
+                    });
+                    editor.tf.insertText('/');
+                  }
+                }}
+              />
+            </div>
+          </div>
+          <div
+            className={cn(
+              'slate-blockToolbarWrapper',
+              'flex h-[1.5em]',
+              isInColumn && 'h-4'
+            )}
+          >
+            <div
+              className={cn(
+                'slate-blockToolbar relative w-4.5',
+                'pointer-events-auto mr-1 flex items-center',
+                isInColumn && 'mr-1.5'
+              )}
+            >
               <Button
                 ref={handleRef}
                 variant="ghost"
@@ -197,7 +250,7 @@ function Gutter({
   const element = useElement();
   const isSelectionAreaVisible = usePluginOption(
     BlockSelectionPlugin,
-    'isSelectionAreaVisible'
+    'isSelected'
   );
   const selected = useSelected();
 
@@ -221,6 +274,39 @@ function Gutter({
   );
 }
 
+function PlusButton({ 
+  onClick, 
+  style 
+}: { 
+  onClick: () => void;
+  style?: React.CSSProperties;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button 
+          variant="ghost" 
+          className="absolute -left-0 h-6 w-full p-0" 
+          style={style}
+          onClick={(e: React.MouseEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+            onClick();
+          }}
+          data-plate-prevent-deselect
+        >
+          <div className="flex size-full items-center justify-center">
+            <Plus className="text-muted-foreground" size={16} />
+          </div>
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>
+        <div>Click to add slash command</div>
+      </TooltipContent>
+    </Tooltip>
+  );
+}
+
 const DragHandle = React.memo(function DragHandle({
   isDragging,
   previewRef,
@@ -238,7 +324,7 @@ const DragHandle = React.memo(function DragHandle({
   return (
     <Tooltip>
       <TooltipTrigger asChild>
-        <div
+      <div
           className="flex size-full items-center justify-center"
           onClick={(e) => {
             e.preventDefault();
@@ -247,7 +333,7 @@ const DragHandle = React.memo(function DragHandle({
           onMouseDown={(e) => {
             resetPreview();
 
-            if (e.button !== 0 || e.shiftKey) return;
+            if ((e.button !== 0 && e.button !== 2) || e.shiftKey) return;
 
             const blockSelection = editor
               .getApi(BlockSelectionPlugin)
@@ -328,7 +414,10 @@ const DragHandle = React.memo(function DragHandle({
           <GripVertical className="text-muted-foreground" />
         </div>
       </TooltipTrigger>
-      <TooltipContent>Drag to move</TooltipContent>
+      <TooltipContent>
+        <div>Drag to move</div>
+        <div>Right Click to open menu</div>
+      </TooltipContent>
     </Tooltip>
   );
 });

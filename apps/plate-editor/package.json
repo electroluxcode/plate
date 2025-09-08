@@ -1,5 +1,5 @@
 {
-  "name": "kk-adapt-app",
+  "name": "@feb/plate-editor",
   "version": "0.0.41",
   "description": "A simple NextJS app with Plate",
   "type": "module",
