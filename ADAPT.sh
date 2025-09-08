@@ -1,4 +1,7 @@
-# yarn build
+#!/bin/bash
+
+# 切换到 plate-editor 目录
 cd apps/plate-editor
-yarn add @semantic-release/changelog@6 @semantic-release/git@10 @semantic-release/gitlab@9 @semantic-release/npm@9
-yarn semantic-release
+
+# 使用 npx 执行 semantic-release，无需预先安装依赖
+npx semantic-release
