@@ -1,0 +1,31 @@
+{
+	"branches": ["+([0-9])?(.{+([0-9]),x}).x", "main"],
+	"plugins": [
+	  "@semantic-release/commit-analyzer",
+	  "@semantic-release/release-notes-generator",
+	  [
+		"@semantic-release/gitlab",
+		{
+		  "gitlabUrl": "https://git.kkgroup.cn"
+		}
+	  ],
+	  "@semantic-release/changelog",
+	  [
+		"@semantic-release/npm",
+		{
+		  "pkgRoot": "dist",
+		  "npmPublish": true
+		}
+	  ],
+	  [
+		"@semantic-release/git",
+		{
+		  "assets": ["package.json", "CHANGELOG.md"],
+		  "message": "chore(release): v${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+		}
+	  ]
+	],
+	"debug": true
+  }
+  
+  
