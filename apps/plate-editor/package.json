@@ -18,6 +18,7 @@
     "package.json"
   ],
   "scripts": {
+    "semantic-release": "semantic-release",
     "start": "next dev --port 4900",
     "dev": "vite --host",
     "build": "NODE_OPTIONS='--max-old-space-size=8192' vite build",
@@ -106,8 +107,7 @@
     "@radix-ui/react-toggle-group": "1.1.10",
     "@radix-ui/react-toolbar": "1.1.10",
     "@radix-ui/react-tooltip": "1.2.7",
-    "@rollup/plugin-commonjs": "^25.0.7",
-    "@rollup/plugin-node-resolve": "^15.2.3",
+    
     "@shikijs/compat": "1.1.7",
     "@slate-yjs/react": "1.1.0",
     "@tabler/icons-react": "3.34.0",
@@ -116,7 +116,6 @@
     "@udecode/cmdk": "*",
     "@udecode/cn": "*",
     "@uploadthing/react": "7.3.1",
-    "@vitejs/plugin-react": "^4.2.1",
     "ai": "4.3.16",
     "autoprefixer": "10.4.21",
     "class-variance-authority": "0.7.1",
@@ -193,11 +192,14 @@
     "unist-util-visit": "5.0.0",
     "uploadthing": "7.7.2",
     "use-file-picker": "2.1.2",
+    "y-webrtc": "10.3.0",
+    "zod": "3.25.61",
     "vaul": "1.1.2",
     "vite": "^5.2.0",
     "vite-plugin-dts": "^3.9.0",
     "vite-plugin-imp": "^2.4.0",
-    "y-webrtc": "10.3.0",
-    "zod": "3.25.61"
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@vitejs/plugin-react": "^4.2.1"
   }
 }
