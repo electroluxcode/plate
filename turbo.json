@@ -13,8 +13,8 @@
         "npm_config_user_agent",
         "https_proxy"
       ],
-      "outputs": ["dist/**", ".next/**"],
-      "cache": false
+      "cache": true,
+      "outputs": ["dist/**", ".next/**"]
     },
     "build:watch": { "cache": false, "persistent": true },
     "brl": { "outputs": [], "cache": false },
